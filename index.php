@@ -45,7 +45,7 @@ $(function() {
     var recent_pings = Array();
     var rsum = 0;
     var full_red_ping_ms = 200;
-
+    var failed_pings = 0;
 
     function ping() {
         $.get('?pong=1', function(data) {
@@ -75,6 +75,8 @@ $(function() {
                     $("#session_high").html(show_rounded(session_high));
                 }
                 $("#ping_count").html(count);
+                $("#failed_pings").html(failed_pings);
+
                 var color_ping = Math.min(ping_ms, full_red_ping_ms);
                 var color_red = Math.round(color_ping / full_red_ping_ms * 255);
                 var color_green = 255-Math.round(color_ping / full_red_ping_ms * 255);
@@ -101,6 +103,12 @@ $(function() {
             }
             last = data;
             ping();
+        }).fail(function () {
+            failed_pings++;
+            count++;
+            $("#ping_count").html(count);
+            $("#failed_pings").html(failed_pings);
+            setTimeout(ping, 1000);
         });
     }
 
@@ -119,6 +127,9 @@ $(function() {
   <tr>
     <th>pings:<th>
     <td id="ping_count" style="width:60px;">0</td>
+    <td colspan="2" style="width:30px;">&nbsp;</td>
+    <th>failed pings:<th>
+    <td id="failed_pings" style="width:60px;">0</td>
   </tr>
   <tr>
     <th>recent average:<th>
